@@ -4,7 +4,7 @@
 ---
 
 <p align="center">
-  <img src="https://via.placeholder.com/800x400?text=Ajua+Game+Board+Visualization" alt="Ajua Game Visualization" width="80%">
+  <img src="https://pbs.twimg.com/media/Gxxn4-pWsAADN2i?format=jpg&name=medium" alt="Ajua Game Visualization" width="80%">
 </p>
 
 ---
