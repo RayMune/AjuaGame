@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ajua - Traditional Mancala</title>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Crimson Pro', serif;
+    background: linear-gradient(135deg, #2c1810 0%, #4a2c1a 50%, #6b3e2e 100%);
+    color: #f4e8d8;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+body::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(139, 90, 43, 0.1) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: drift 60s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes drift {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(50px, 50px); }
+}
+
+h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 3.5em;
+    font-weight: 700;
+    color: #f9d697;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+    margin-bottom: 15px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.subtitle {
+    font-size: 1.1em;
+    color: #d4b896;
+    margin-bottom: 30px;
+    font-style: italic;
+}
+
+.header {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.game-container {
+    position: relative;
+    z-index: 1;
+}
+
+.info {
+    font-size: 1.5em;
+    margin-bottom: 25px;
+    padding: 12px 30px;
+    background: rgba(74, 44, 26, 0.7);
+    border-radius: 25px;
+    border: 2px solid #8b5a2b;
+    backdrop-filter: blur(10px);
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.board-wrapper {
+    background: linear-gradient(145deg, #3d2415, #5a3825);
+    padding: 40px;
+    border-radius: 30px;
+    box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.6),
+        inset 0 2px 4px rgba(255, 255, 255, 0.1),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.3);
+    border: 3px solid #6b4423;
+}
+
+.player-label {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.3em;
+    font-weight: 600;
+    margin: 15px 0;
+    color: #f9d697;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.board-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin: 10px 0;
+}
+
+.pit {
+    width: 85px;
+    height: 85px;
+    background: radial-gradient(circle at 30% 30%, #d4a574, #a67c52);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.8em;
+    font-weight: 700;
+    color: #2c1810;
+    box-shadow: 
+        0 8px 16px rgba(0, 0, 0, 0.4),
+        inset 0 -3px 8px rgba(0, 0, 0, 0.3),
+        inset 0 3px 8px rgba(255, 255, 255, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
+    user-select: none;
+}
+
+.pit::before {
+    content: '';
+    position: absolute;
+    top: 10%;
+    left: 20%;
+    width: 30%;
+    height: 30%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.4), transparent);
+    border-radius: 50%;
+    opacity: 0.6;
+}
+
+.pit:hover {
+    transform: translateY(-8px) scale(1.05);
+    box-shadow: 
+        0 12px 24px rgba(0, 0, 0, 0.5),
+        inset 0 -3px 8px rgba(0, 0, 0, 0.3),
+        inset 0 3px 8px rgba(255, 255, 255, 0.3);
+    background: radial-gradient(circle at 30% 30%, #e8ba85, #b88a5f);
+}
+
+.pit:active {
+    transform: translateY(-2px) scale(1.02);
+}
+
+.pit.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.store {
+    width: 110px;
+    height: 200px;
+    background: linear-gradient(180deg, #8b5a2b, #6b4423);
+    border-radius: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2.2em;
+    font-weight: 700;
+    color: #f9d697;
+    box-shadow: 
+        0 10px 30px rgba(0, 0, 0, 0.5),
+        inset 0 4px 12px rgba(0, 0, 0, 0.4),
+        inset 0 -4px 12px rgba(255, 255, 255, 0.1);
+    border: 3px solid #5a3825;
+    position: relative;
+}
+
+.store::before {
+    content: '';
+    position: absolute;
+    top: 15%;
+    left: 20%;
+    width: 35%;
+    height: 20%;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent);
+    border-radius: 50%;
+}
+
+.store-label {
+    position: absolute;
+    font-size: 0.4em;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    letter-spacing: 1px;
+    top: -30px;
+    color: #d4b896;
+    display: none;
+}
+
+.controls {
+    margin-top: 35px;
+    text-align: center;
+}
+
+button {
+    background: linear-gradient(135deg, #8b5a2b, #6b4423);
+    border: 2px solid #5a3825;
+    padding: 14px 40px;
+    border-radius: 30px;
+    color: #f9d697;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+button:hover {
+    background: linear-gradient(135deg, #a67c52, #8b5a2b);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+.winner-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.5s ease;
+}
+
+.winner-content {
+    background: linear-gradient(135deg, #6b4423, #8b5a2b);
+    padding: 60px;
+    border-radius: 30px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+    border: 3px solid #f9d697;
+    animation: scaleIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.winner-content h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 4em;
+    color: #f9d697;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+}
+
+.winner-content .emoji {
+    font-size: 5em;
+    display: block;
+    margin-bottom: 20px;
+    animation: bounce 1s infinite;
+}
+
+.winner-content p {
+    font-size: 1.5em;
+    color: #d4b896;
+    font-style: italic;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+    from { transform: scale(0.5); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+
+.pit.sowing {
+    animation: sow 0.4s ease;
+    background: radial-gradient(circle at 30% 30%, #f9d697, #d4a574);
+}
+
+@keyframes sow {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.15) rotate(5deg); }
+    100% { transform: scale(1); }
+}
+
+.pit.ai-move {
+    animation: aiPulse 0.6s ease;
+}
+
+@keyframes aiPulse {
+    0%, 100% { 
+        transform: scale(1);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    }
+    50% { 
+        transform: scale(1.2);
+        box-shadow: 0 12px 30px rgba(139, 90, 43, 0.6);
+        background: radial-gradient(circle at 30% 30%, #f9d697, #d4a574);
+    }
+}
+
+.store.score-update {
+    animation: scoreGlow 0.5s ease;
+}
+
+@keyframes scoreGlow {
+    0%, 100% { 
+        box-shadow: 
+            0 10px 30px rgba(0, 0, 0, 0.5),
+            inset 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+    50% { 
+        box-shadow: 
+            0 10px 40px rgba(249, 214, 151, 0.6),
+            inset 0 4px 12px rgba(0, 0, 0, 0.4),
+            0 0 30px rgba(249, 214, 151, 0.5);
+    }
+}
+
+@media (max-width: 768px) {
+    h1 { font-size: 2.5em; }
+    .pit { width: 70px; height: 70px; font-size: 1.5em; }
+    .store { width: 90px; height: 170px; font-size: 1.8em; }
+    .board-wrapper { padding: 25px; }
+    .chat-button { bottom: 20px; right: 20px; width: 50px; height: 50px; }
+    .chat-window { width: 90%; right: 5%; }
+}
+
+/* Chat Interface */
+.chat-button {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 65px;
+    height: 65px;
+    background: linear-gradient(135deg, #8b5a2b, #6b4423);
+    border-radius: 50%;
+    border: 3px solid #f9d697;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2em;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease;
+    z-index: 999;
+    animation: pulse 2s infinite;
+}
+
+.chat-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 12px 35px rgba(139, 90, 43, 0.7);
+}
+
+@keyframes pulse {
+    0%, 100% { box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5); }
+    50% { box-shadow: 0 8px 35px rgba(249, 214, 151, 0.6); }
+}
+
+.chat-window {
+    position: fixed;
+    bottom: 110px;
+    right: 30px;
+    width: 380px;
+    max-height: 550px;
+    background: linear-gradient(145deg, #3d2415, #5a3825);
+    border-radius: 20px;
+    border: 3px solid #8b5a2b;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+    display: none;
+    flex-direction: column;
+    z-index: 998;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.chat-header {
+    background: linear-gradient(135deg, #8b5a2b, #6b4423);
+    padding: 18px;
+    border-radius: 17px 17px 0 0;
+    border-bottom: 2px solid #5a3825;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-header h3 {
+    font-family: 'Montserrat', sans-serif;
+    color: #f9d697;
+    margin: 0;
+    font-size: 1.3em;
+    letter-spacing: 1px;
+}
+
+.chat-close {
+    background: none;
+    border: none;
+    color: #f9d697;
+    font-size: 1.5em;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.chat-close:hover {
+    transform: rotate(90deg);
+    color: #fff;
+}
+
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    max-height: 380px;
+}
+
+.chat-message {
+    margin-bottom: 15px;
+    animation: messageSlide 0.3s ease;
+}
+
+@keyframes messageSlide {
+    from { transform: translateX(-10px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+.chat-message.user {
+    text-align: right;
+}
+
+.chat-message .message-bubble {
+    display: inline-block;
+    padding: 12px 18px;
+    border-radius: 18px;
+    max-width: 75%;
+    word-wrap: break-word;
+    font-size: 0.95em;
+    line-height: 1.4;
+}
+
+.chat-message.user .message-bubble {
+    background: linear-gradient(135deg, #8b5a2b, #6b4423);
+    color: #f9d697;
+    border: 1px solid #5a3825;
+}
+
+.chat-message.ai .message-bubble {
+    background: rgba(212, 184, 150, 0.2);
+    color: #f4e8d8;
+    border: 1px solid rgba(139, 90, 43, 0.3);
+}
+
+.chat-input-container {
+    padding: 15px;
+    border-top: 2px solid #5a3825;
+    background: rgba(44, 24, 16, 0.5);
+    border-radius: 0 0 17px 17px;
+}
+
+.chat-input-wrapper {
+    display: flex;
+    gap: 10px;
+}
+
+.chat-input {
+    flex: 1;
+    background: rgba(212, 184, 150, 0.1);
+    border: 2px solid #8b5a2b;
+    border-radius: 20px;
+    padding: 12px 18px;
+    color: #f4e8d8;
+    font-family: 'Crimson Pro', serif;
+    font-size: 1em;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.chat-input:focus {
+    border-color: #f9d697;
+    background: rgba(212, 184, 150, 0.15);
+}
+
+.chat-input::placeholder {
+    color: rgba(244, 232, 216, 0.5);
+}
+
+.chat-send {
+    background: linear-gradient(135deg, #8b5a2b, #6b4423);
+    border: 2px solid #5a3825;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    color: #f9d697;
+    font-size: 1.2em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.chat-send:hover {
+    background: linear-gradient(135deg, #a67c52, #8b5a2b);
+    transform: scale(1.05);
+}
+
+.chat-send:active {
+    transform: scale(0.95);
+}
+
+.typing-indicator {
+    display: none;
+    padding: 12px 18px;
+    background: rgba(212, 184, 150, 0.2);
+    border: 1px solid rgba(139, 90, 43, 0.3);
+    border-radius: 18px;
+    max-width: 75%;
+    margin-bottom: 15px;
+}
+
+.typing-indicator span {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #d4b896;
+    margin: 0 3px;
+    animation: typing 1.4s infinite;
+}
+
+.typing-indicator span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes typing {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+    30% { transform: translateY(-10px); opacity: 1; }
+}
+
+.chat-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+    background: rgba(44, 24, 16, 0.5);
+    border-radius: 10px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+    background: #8b5a2b;
+    border-radius: 10px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+    background: #a67c52;
+}
+</style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>🪨 Ajua 🪨</h1>
+            <div class="subtitle">Traditional Mancala • You vs Computer</div>
+        </div>
+        
+        <div class="info" id="turn-info">
+            Turn: {{ 'You' if turn == 'p1' else 'Computer' }}
+        </div>
+
+        <div class="board-wrapper">
+            <div class="player-label">Computer</div>
+            
+            <div class="board-row">
+                <div class="store" id="store-p2">
+                    {{ board.stores.p2 }}
+                </div>
+                
+                <div style="display: flex; gap: 15px;">
+                    {% for i in range(5, -1, -1) %}
+                        <div class="pit disabled" id="ai-pit-{{ i }}">{{ board.p2[i] }}</div>
+                    {% endfor %}
+                </div>
+                
+                <div class="store" id="store-p1">
+                    {{ board.stores.p1 }}
+                </div>
+            </div>
+
+            <div class="player-label">You</div>
+            
+            <div class="board-row">
+                <div style="width: 110px;"></div>
+                <div style="display: flex; gap: 15px;">
+                    {% for i in range(6) %}
+                        <div class="pit" id="pit-{{ i }}" onclick="makeMove('{{ i }}')">{{ board.p1[i] }}</div>
+                    {% endfor %}
+                </div>
+                <div style="width: 110px;"></div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button onclick="window.location='/reset'">New Game</button>
+        </div>
+    </div>
+
+    <div class="winner-overlay" id="winner-overlay">
+        <div class="winner-content" id="winner-content">
+            <span class="emoji" id="winner-emoji"></span>
+            <h2 id="winner-text"></h2>
+            <!-- Claim form appears when player wins -->
+            <div id="claim-section" style="margin-top:20px; display:none;">
+                <p style="color:#d4b896; font-size:1.1em; margin-bottom:12px;">Enter your Testnet account ID to receive 1 test HBAR:</p>
+                <input id="claim-account" type="text" placeholder="0.0.xxxxx" style="padding:12px 16px; border-radius:8px; border:2px solid #5a3825; width:260px; font-size:1em; margin-bottom:12px;"> 
+                <div>
+                    <button id="claim-btn" onclick="submitClaim()">Claim 1 Test HBAR</button>
+                </div>
+                <p id="claim-status" style="margin-top:12px; color:#d4b896;"></p>
+            </div>
+            <p id="winner-note" style="color:#d4b896; margin-top:18px;">Resetting game...</p>
+        </div>
+    </div>
+
+    <!-- Chat Interface -->
+    <div class="chat-button" id="chat-button" onclick="toggleChat()">
+        💬
+    </div>
+
+    <div class="chat-window" id="chat-window">
+        <div class="chat-header">
+            <h3>🪨 Chat with Ajua AI</h3>
+            <button class="chat-close" onclick="toggleChat()">×</button>
+        </div>
+        <div class="chat-messages" id="chat-messages">
+            <div class="chat-message ai">
+                <div class="message-bubble">
+                    Hello! I'm Ajua AI, your Mancala companion. Ask me about strategies, game history, or just chat! 🎮
+                </div>
+            </div>
+        </div>
+        <div class="typing-indicator" id="typing-indicator">
+            <span></span><span></span><span></span>
+        </div>
+        <div class="chat-input-container">
+            <div class="chat-input-wrapper">
+                <input type="text" class="chat-input" id="chat-input" placeholder="Ask me anything..." onkeypress="handleChatKeypress(event)">
+                <button class="chat-send" onclick="sendMessage()">➤</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    let isProcessing = false;
+
+    function displayWinner(winner) {
+        const overlay = document.getElementById('winner-overlay');
+        const emoji = document.getElementById('winner-emoji');
+        const text = document.getElementById('winner-text');
+        emoji.textContent = winner === 'You' ? '🎆🏆' : '🏆';
+        text.textContent = `${winner} Win${winner === 'You' ? '' : 's'}!`;
+
+        overlay.style.display = 'flex';
+
+        // If player won, show claim UI (ask for testnet account ID)
+        const claimSection = document.getElementById('claim-section');
+        const winnerNote = document.getElementById('winner-note');
+        if (winner === 'You') {
+            claimSection.style.display = 'block';
+            winnerNote.textContent = 'Enter your Testnet account ID to receive 1 test HBAR. This will be sent from the game operator account.';
+        } else {
+            // Computer won — show trophy and auto-reset
+            claimSection.style.display = 'none';
+            winnerNote.textContent = 'Resetting game...';
+            setTimeout(() => { window.location = '/reset'; }, 3000);
+        }
+    }
+
+    async function submitClaim() {
+        const btn = document.getElementById('claim-btn');
+        const status = document.getElementById('claim-status');
+        const accountInput = document.getElementById('claim-account');
+        const toAccount = accountInput.value.trim();
+
+        if (!toAccount) {
+            status.textContent = 'Please enter a valid account id (e.g. 0.0.12345)';
+            return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = 'Sending...';
+        status.textContent = '';
+
+        try {
+            const res = await fetch('/claim', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ account_id: toAccount })
+            });
+
+            // attempt to parse JSON safely
+            let data = null;
+            try { data = await res.json(); } catch (e) { console.warn('Non-JSON response', e); }
+
+            if (!res.ok) {
+                // show server-sent error if available, otherwise a fallback
+                const errMsg = (data && (data.error || data.message)) || `Transfer failed (status ${res.status})`;
+                status.textContent = errMsg;
+                console.error('Claim error:', errMsg, data);
+                btn.disabled = false;
+                btn.textContent = 'Claim 1 Test HBAR';
+                return;
+            }
+
+            // Success - show message and schedule reset
+            const successMsg = (data && (data.message || 'Sent!')) || 'Sent!';
+            status.textContent = successMsg;
+            console.log('Claim success:', data);
+
+            // Keep button disabled to avoid duplicate submissions while we reset
+            btn.textContent = 'Sent';
+
+            // Wait briefly then reset game so player sees updated status
+            setTimeout(() => { window.location = '/reset'; }, 3000);
+        } catch (err) {
+            console.error(err);
+            status.textContent = 'Network or server error. See console.';
+            btn.disabled = false;
+            btn.textContent = 'Claim 1 Test HBAR';
+        }
+    }
+
+    async function makeMove(pit) {
+        if (isProcessing) return;
+        
+        const pitElement = document.getElementById(`pit-${pit}`);
+        if (pitElement.classList.contains('disabled')) return;
+        
+        isProcessing = true;
+        disablePlayerPits();
+        
+        pitElement.classList.add('sowing');
+        setTimeout(() => pitElement.classList.remove('sowing'), 400);
+        
+        try {
+            const response = await fetch(`/move/${pit}`, { method: 'POST' });
+            if (!response.ok) {
+                alert('Invalid move!');
+                isProcessing = false;
+                enablePlayerPits();
+                return;
+            }
+
+            const data = await response.json();
+            
+            await new Promise(resolve => setTimeout(resolve, 500));
+            updateBoard(data.board);
+            updateTurn(data.turn);
+
+            if (data.ai_moves && data.ai_moves.length > 0) {
+                updateTurn('p2');
+                
+                for (let i = 0; i < data.ai_moves.length; i++) {
+                    await new Promise(resolve => setTimeout(resolve, 800));
+                    const move = data.ai_moves[i];
+                    highlightAIMove(move);
+                    await new Promise(resolve => setTimeout(resolve, 600));
+                }
+                
+                updateBoard(data.board);
+                updateTurn(data.turn);
+            }
+
+            if (data.winner) {
+                displayWinner(data.winner);
+            } else {
+                isProcessing = false;
+                if (data.turn === 'p1') {
+                    enablePlayerPits();
+                }
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            isProcessing = false;
+            enablePlayerPits();
+        }
+    }
+
+    function updateBoard(board) {
+        for (let i = 0; i < 6; i++) {
+            const playerPit = document.getElementById(`pit-${i}`);
+            const aiPit = document.getElementById(`ai-pit-${5 - i}`);
+            
+            if (playerPit.textContent !== board.p1[i].toString()) {
+                playerPit.classList.add('sowing');
+                setTimeout(() => playerPit.classList.remove('sowing'), 400);
+            }
+            if (aiPit.textContent !== board.p2[5 - i].toString()) {
+                aiPit.classList.add('sowing');
+                setTimeout(() => aiPit.classList.remove('sowing'), 400);
+            }
+            
+            playerPit.textContent = board.p1[i];
+            aiPit.textContent = board.p2[5 - i];
+        }
+        
+        const storeP1 = document.getElementById('store-p1');
+        const storeP2 = document.getElementById('store-p2');
+        
+        if (storeP1.textContent.trim() !== board.stores.p1.toString()) {
+            storeP1.classList.add('score-update');
+            setTimeout(() => storeP1.classList.remove('score-update'), 500);
+        }
+        if (storeP2.textContent.trim() !== board.stores.p2.toString()) {
+            storeP2.classList.add('score-update');
+            setTimeout(() => storeP2.classList.remove('score-update'), 500);
+        }
+        
+        storeP1.textContent = board.stores.p1;
+        storeP2.textContent = board.stores.p2;
+    }
+
+    function updateTurn(turn) {
+        const turnInfo = document.getElementById('turn-info');
+        turnInfo.textContent = `Turn: ${turn === 'p1' ? 'You' : 'Computer'}`;
+        turnInfo.style.background = turn === 'p1' 
+            ? 'rgba(139, 90, 43, 0.7)' 
+            : 'rgba(107, 68, 35, 0.7)';
+    }
+
+    function highlightAIMove(pitIndex) {
+        const pit = document.getElementById(`ai-pit-${pitIndex}`);
+        if (pit) {
+            pit.classList.add('ai-move');
+            setTimeout(() => pit.classList.remove('ai-move'), 600);
+        }
+    }
+
+    function disablePlayerPits() {
+        for (let i = 0; i < 6; i++) {
+            document.getElementById(`pit-${i}`).classList.add('disabled');
+        }
+    }
+
+    function enablePlayerPits() {
+        for (let i = 0; i < 6; i++) {
+            const pit = document.getElementById(`pit-${i}`);
+            if (parseInt(pit.textContent) > 0) {
+                pit.classList.remove('disabled');
+            }
+        }
+    }
+
+    // Initialize on load
+    window.addEventListener('load', () => {
+        const turn = '{{ turn }}';
+        if (turn === 'p1') {
+            enablePlayerPits();
+        }
+    });
+
+    // Chat functionality
+    function toggleChat() {
+        const chatWindow = document.getElementById('chat-window');
+        const chatButton = document.getElementById('chat-button');
+        
+        if (chatWindow.style.display === 'flex') {
+            chatWindow.style.display = 'none';
+            chatButton.style.display = 'flex';
+        } else {
+            chatWindow.style.display = 'flex';
+            chatButton.style.display = 'flex';
+            document.getElementById('chat-input').focus();
+        }
+    }
+
+    function handleChatKeypress(event) {
+        if (event.key === 'Enter') {
+            sendMessage();
+        }
+    }
+
+    async function sendMessage() {
+        const input = document.getElementById('chat-input');
+        const message = input.value.trim();
+        
+        if (!message) return;
+        
+        // Add user message to chat
+        addMessageToChat('user', message);
+        input.value = '';
+        
+        // Show typing indicator
+        const typingIndicator = document.getElementById('typing-indicator');
+        typingIndicator.style.display = 'block';
+        scrollChatToBottom();
+        
+        try {
+            const response = await fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: message })
+            });
+            
+            const data = await response.json();
+            
+            // Hide typing indicator
+            typingIndicator.style.display = 'none';
+            
+            if (data.response) {
+                addMessageToChat('ai', data.response);
+            } else if (data.error) {
+                addMessageToChat('ai', 'Sorry, I encountered an error. Please try again.');
+            }
+        } catch (error) {
+            typingIndicator.style.display = 'none';
+            addMessageToChat('ai', 'Sorry, I could not connect. Please check your connection.');
+            console.error('Chat error:', error);
+        }
+    }
+
+    function addMessageToChat(role, text) {
+        const messagesContainer = document.getElementById('chat-messages');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `chat-message ${role}`;
+        
+        const bubble = document.createElement('div');
+        bubble.className = 'message-bubble';
+        bubble.textContent = text;
+        
+        messageDiv.appendChild(bubble);
+        messagesContainer.appendChild(messageDiv);
+        
+        scrollChatToBottom();
+    }
+
+    function scrollChatToBottom() {
+        const messagesContainer = document.getElementById('chat-messages');
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+    </script>
+</body>
+</html>

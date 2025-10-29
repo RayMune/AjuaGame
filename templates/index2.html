@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajua </title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(236, 72, 153, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        main {
+            width: 1100px;
+            max-width: 96%;
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            text-align: center;
+            color: #f1f5f9;
+            margin-bottom: 30px;
+            font-size: 3em;
+            font-weight: 800;
+            text-shadow: 0 2px 20px rgba(139, 92, 246, 0.5);
+            letter-spacing: 2px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        select, button {
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        select {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            color: white;
+            border: 2px solid rgba(139, 92, 246, 0.3);
+        }
+
+        select:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(139, 92, 246, 0.5);
+        }
+
+        button {
+            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+            color: white;
+            box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px rgba(139, 92, 246, 0.6);
+        }
+
+        .board-wrapper {
+            perspective: 1500px;
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+            min-height: calc(100vh - 200px);
+            align-items: center;
+        }
+
+        .board-container {
+            background: linear-gradient(145deg, #8b4513 0%, #a0522d 50%, #8b4513 100%);
+            padding: 60px;
+            border-radius: 30px;
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.5),
+                inset 0 2px 4px rgba(255, 255, 255, 0.1),
+                inset 0 -2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+            border: 8px solid #654321;
+            min-height: 500px;
+            height: auto;
+            width: 90%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .board-container::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 2px solid rgba(139, 69, 19, 0.3);
+            border-radius: 25px;
+            pointer-events: none;
+        }
+
+        .board-container::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60%;
+            height: 80%;
+            background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+            border-radius: 50%;
+            filter: blur(10px);
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: 120px 1fr 120px;
+            gap: 25px;
+            align-items: center;
+            position: relative;
+        }
+
+        .player-label {
+            position: absolute;
+            font-size: 1.2em;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+            padding: 8px 16px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        .player-label.player1 {
+            bottom: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(37, 99, 235, 0.3));
+        }
+
+        .player-label.player2 {
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(220, 38, 38, 0.3));
+        }
+
+        .side {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            padding: 20px;
+        }
+
+        .board {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            gap: 20px;
+            padding: 20px 0;
+        }
+
+        .pits {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 20px;
+        }
+
+        /* Special styling for Player 1's pits to center them with right shift */
+        .side:last-child .pits {
+            grid-template-columns: repeat(5, 1fr);
+            padding: 0 calc(100% / 12);
+            margin-left: 90px; /* Increased right shift */
+        }
+
+        .pit {
+            background: 
+                radial-gradient(circle at 30% 30%, #1a1a1a 0%, #0d0d0d 100%);
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 
+                inset 0 4px 8px rgba(0, 0, 0, 0.8),
+                inset 0 -2px 4px rgba(255, 255, 255, 0.05),
+                0 2px 4px rgba(0, 0, 0, 0.3);
+            border: 3px solid #654321;
+            position: relative;
+            transform-style: preserve-3d;
+        }
+
+        .pit::before {
+            content: '';
+            position: absolute;
+            inset: 8px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 50% 40%, rgba(139, 69, 19, 0.2) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .pit:hover:not(.disabled) {
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 
+                inset 0 4px 8px rgba(0, 0, 0, 0.8),
+                0 8px 20px rgba(139, 92, 246, 0.4),
+                0 0 30px rgba(236, 72, 153, 0.3);
+            border-color: #8b5cf6;
+        }
+
+        .pit.active {
+            border-color: #8b5cf6;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { 
+                box-shadow: 
+                    inset 0 4px 8px rgba(0, 0, 0, 0.8),
+                    0 0 20px rgba(139, 92, 246, 0.5);
+            }
+            50% { 
+                box-shadow: 
+                    inset 0 4px 8px rgba(0, 0, 0, 0.8),
+                    0 0 40px rgba(139, 92, 246, 0.8),
+                    0 0 60px rgba(236, 72, 153, 0.4);
+            }
+        }
+
+        .pit.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pit.animating {
+            animation: sow 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes sow {
+            0% { transform: scale(1); }
+            30% { transform: scale(0.85) translateY(5px); }
+            60% { transform: scale(1.2) translateY(-15px); }
+            100% { transform: scale(1); }
+        }
+
+        .pit.receiving {
+            animation: receive 0.4s ease-out;
+        }
+
+        @keyframes receive {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.8), 0 0 30px rgba(251, 191, 36, 0.6); }
+            100% { transform: scale(1); }
+        }
+
+        .seeds-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .seeds {
+            font-size: 2em;
+            font-weight: 700;
+            color: #fbbf24;
+            text-shadow: 
+                0 2px 4px rgba(0, 0, 0, 0.8),
+                0 0 10px rgba(251, 191, 36, 0.5);
+            position: relative;
+            z-index: 2;
+        }
+
+        .seed-visual {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            background: radial-gradient(circle at 30% 30%, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
+            border-radius: 50%;
+            box-shadow: 
+                0 3px 6px rgba(0, 0, 0, 0.6),
+                inset 0 2px 3px rgba(255, 255, 255, 0.4),
+                0 0 8px rgba(251, 191, 36, 0.3);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-8px) scale(1.1); }
+        }
+
+        .seed-pile {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 3px;
+            padding: 10px;
+        }
+
+        .seed-piece {
+            width: 10px;
+            height: 10px;
+            background: radial-gradient(circle at 35% 35%, #fcd34d 0%, #fbbf24 40%, #f59e0b 80%, #d97706 100%);
+            border-radius: 50%;
+            box-shadow: 
+                0 2px 4px rgba(0, 0, 0, 0.7),
+                inset 0 1px 2px rgba(255, 255, 255, 0.5),
+                0 0 6px rgba(251, 191, 36, 0.2);
+        }
+
+        .store {
+            background: 
+                radial-gradient(ellipse at center, #1a1a1a 0%, #0d0d0d 100%);
+            border-radius: 50% / 45%;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 250px;
+            box-shadow: 
+                inset 0 8px 16px rgba(0, 0, 0, 0.9),
+                inset 0 -4px 8px rgba(255, 255, 255, 0.05),
+                0 4px 8px rgba(0, 0, 0, 0.5);
+            border: 4px solid #654321;
+            position: relative;
+            transform-style: preserve-3d;
+        }
+
+        .store::before {
+            content: '';
+            position: absolute;
+            inset: 12px;
+            border-radius: 50% / 45%;
+            background: radial-gradient(ellipse at center top, rgba(139, 69, 19, 0.2) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .store.player1 {
+            border-color: #3b82f6;
+            box-shadow: 
+                inset 0 8px 16px rgba(0, 0, 0, 0.9),
+                0 0 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .store.player2 {
+            border-color: #ef4444;
+            box-shadow: 
+                inset 0 8px 16px rgba(0, 0, 0, 0.9),
+                0 0 20px rgba(239, 68, 68, 0.3);
+        }
+
+        .store-label {
+            font-size: 1em;
+            font-weight: 700;
+            margin-bottom: 12px;
+            opacity: 0.9;
+            color: rgba(255, 255, 255, 0.8);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .store-count {
+            font-size: 3em;
+            font-weight: 800;
+            color: #fbbf24;
+            text-shadow: 
+                0 4px 8px rgba(0, 0, 0, 0.8),
+                0 0 20px rgba(251, 191, 36, 0.6);
+        }
+
+        .stores-column {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .status-bar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            padding: 20px 30px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                inset 0 1px 2px rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .status-text {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: #f1f5f9;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        .winner-text {
+            font-size: 1.8em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #10b981, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: celebration 0.6s ease;
+        }
+
+        @keyframes celebration {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.1) rotate(-3deg); }
+            75% { transform: scale(1.1) rotate(3deg); }
+        }
+
+        .player-indicator {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(236, 72, 153, 0.3));
+            backdrop-filter: blur(10px);
+            color: #fbbf24;
+            font-weight: 800;
+            border: 2px solid rgba(251, 191, 36, 0.3);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .thinking {
+            color: #fbbf24;
+            font-style: italic;
+            animation: blink 1.5s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @media (max-width: 1024px) {
+            .board-container {
+                padding: 30px;
+                transform: rotateX(10deg);
+            }
+            
+            .pits {
+                gap: 12px;
+            }
+            
+            .pit {
+                min-height: 70px;
+            }
+            
+            .store {
+                min-height: 200px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+            
+            .board-container {
+                padding: 20px;
+                transform: rotateX(5deg);
+            }
+            
+            .board {
+                grid-template-columns: 80px 1fr 80px;
+                gap: 15px;
+            }
+            
+            .pits {
+                grid-template-columns: repeat(6, minmax(45px, 1fr));
+                gap: 8px;
+            }
+            
+            .pit {
+                min-height: 55px;
+            }
+            
+            .seeds {
+                font-size: 1.5em;
+            }
+            
+            .store {
+                min-height: 150px;
+                padding: 20px 15px;
+            }
+            
+            .store-count {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>AJUA</h1>
+        
+        <div class="controls">
+            <select id="mode-select">
+                <option value="hotseat">Hotseat (2 Players)</option>
+                <option value="single">Single Player (vs AI)</option>
+            </select>
+            <button id="new-btn">New Game</button>
+        </div>
+
+        <div class="board-wrapper">
+            <div class="board-container">
+                <div id="board" class="board"></div>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div id="status" class="status-text">Loading...</div>
+        </div>
+    </main>
+
+    <script>
+        const PITS_PER_SIDE = 6;
+        const INITIAL_SEEDS = 4;
+
+        let gameState = {
+            pits: Array(PITS_PER_SIDE * 2).fill(INITIAL_SEEDS),
+            stores: [0, 0],
+            turn: 0,
+            winner: null,
+            mode: 'hotseat'
+        };
+
+        function newBoard() {
+            return {
+                pits: Array(PITS_PER_SIDE * 2).fill(INITIAL_SEEDS),
+                stores: [0, 0],
+                turn: 0,
+                winner: null,
+                mode: gameState.mode
+            };
+        }
+
+        function playerPitsRange(player) {
+            const start = player * PITS_PER_SIDE;
+            return Array.from({length: PITS_PER_SIDE}, (_, i) => start + i);
+        }
+
+        function isPlayersPit(index, player) {
+            return playerPitsRange(player).includes(index);
+        }
+
+        function generateSeedVisuals(count) {
+            const container = document.createElement('div');
+            container.className = 'seeds-container';
+            
+            const seedsText = document.createElement('div');
+            seedsText.className = 'seeds';
+            seedsText.textContent = count;
+            container.appendChild(seedsText);
+            
+            // Add visual seed pile in background
+            if (count > 0) {
+                const pile = document.createElement('div');
+                pile.className = 'seed-pile';
+                const maxPileSeeds = Math.min(count, 20);
+                for (let i = 0; i < maxPileSeeds; i++) {
+                    const seed = document.createElement('div');
+                    seed.className = 'seed-piece';
+                    seed.style.animationDelay = `${Math.random() * 2}s`;
+                    pile.appendChild(seed);
+                }
+                container.appendChild(pile);
+            }
+            
+            // Add decorative floating seeds around the edge
+            const maxVisualSeeds = Math.min(count, 6);
+            for (let i = 0; i < maxVisualSeeds; i++) {
+                const seed = document.createElement('div');
+                seed.className = 'seed-visual';
+                const angle = (i / maxVisualSeeds) * Math.PI * 2;
+                const radius = 32;
+                const x = Math.cos(angle) * radius;
+                const y = Math.sin(angle) * radius;
+                seed.style.left = `calc(50% + ${x}px)`;
+                seed.style.top = `calc(50% + ${y}px)`;
+                seed.style.animationDelay = `${i * 0.15}s`;
+                container.appendChild(seed);
+            }
+            
+            return container;
+        }
+
+        function sowAndCapture(state, pitIndex) {
+            const pits = state.pits;
+            const stores = state.stores;
+            const player = state.turn;
+
+            let seeds = pits[pitIndex];
+            if (seeds === 0) return false;
+
+            pits[pitIndex] = 0;
+            let idx = pitIndex;
+
+            while (seeds > 0) {
+                idx++;
+                
+                if (idx === 6 && player === 0) {
+                    stores[0]++;
+                    seeds--;
+                    if (seeds === 0) break;
+                    continue;
+                } else if (idx === 13 && player === 1) {
+                    stores[1]++;
+                    seeds--;
+                    if (seeds === 0) break;
+                    continue;
+                } else if (idx === 6 && player === 1) {
+                    idx++;
+                } else if (idx === 13 && player === 0) {
+                    idx = 0;
+                }
+
+                if (idx >= 12) {
+                    idx = 0;
+                }
+
+                pits[idx]++;
+                seeds--;
+            }
+
+            const lastPit = idx;
+            if (lastPit !== 6 && lastPit !== 13 && 
+                isPlayersPit(lastPit, player) && 
+                pits[lastPit] === 1) {
+                const oppositePit = 11 - lastPit;
+                if (pits[oppositePit] > 0) {
+                    stores[player] += pits[lastPit] + pits[oppositePit];
+                    pits[lastPit] = 0;
+                    pits[oppositePit] = 0;
+                }
+            }
+
+            const extraTurn = (player === 0 && idx === 6) || (player === 1 && idx === 13);
+
+            if (!extraTurn) {
+                state.turn = 1 - player;
+            }
+
+            const p0Empty = playerPitsRange(0).every(i => pits[i] === 0);
+            const p1Empty = playerPitsRange(1).every(i => pits[i] === 0);
+
+            if (p0Empty || p1Empty) {
+                playerPitsRange(0).forEach(i => {
+                    stores[0] += pits[i];
+                    pits[i] = 0;
+                });
+                playerPitsRange(1).forEach(i => {
+                    stores[1] += pits[i];
+                    pits[i] = 0;
+                });
+
+                if (stores[0] > stores[1]) {
+                    state.winner = 0;
+                } else if (stores[1] > stores[0]) {
+                    state.winner = 1;
+                } else {
+                    state.winner = -1;
+                }
+            }
+
+            return true;
+        }
+
+        function simpleAI(state) {
+            const aiPlayer = state.turn;
+            const aiPits = playerPitsRange(aiPlayer);
+            
+            for (let pit of aiPits) {
+                if (state.pits[pit] > 0) {
+                    const testState = JSON.parse(JSON.stringify(state));
+                    const seeds = testState.pits[pit];
+                    let testIdx = pit;
+                    
+                    for (let s = 0; s < seeds; s++) {
+                        testIdx++;
+                        if (testIdx === 6 && aiPlayer === 1) testIdx++;
+                        if (testIdx === 13 && aiPlayer === 0) testIdx = 0;
+                        if (testIdx >= 12) testIdx = 0;
+                    }
+                    
+                    if (isPlayersPit(testIdx, aiPlayer) && 
+                        testState.pits[testIdx] === 0) {
+                        return pit;
+                    }
+                }
+            }
+            
+            for (let pit of aiPits) {
+                if (state.pits[pit] > 0) return pit;
+            }
+            return null;
+        }
+
+        function renderBoard(state) {
+            const board = document.getElementById('board');
+            board.innerHTML = '';
+
+            const p1Side = document.createElement('div');
+            p1Side.className = 'side';
+            const p1Pits = document.createElement('div');
+            p1Pits.className = 'pits';
+            
+            for (let i = 11; i >= 6; i--) {
+                const pit = createPit(i, 1, state);
+                p1Pits.appendChild(pit);
+            }
+            p1Side.appendChild(p1Pits);
+
+            const p1Label = document.createElement('div');
+            p1Label.className = 'player-label player2';
+            p1Label.textContent = state.mode === 'single' ? 'AI (Player 2)' : 'Player 2';
+            p1Side.style.position = 'relative';
+            p1Side.appendChild(p1Label);
+
+            const storesCol = document.createElement('div');
+            storesCol.className = 'stores-column';
+            
+            const p1Store = document.createElement('div');
+            p1Store.className = 'store player2';
+            p1Store.innerHTML = `
+                <div class="store-label">Player 2</div>
+                <div class="store-count">${state.stores[1]}</div>
+            `;
+            
+            const p0Store = document.createElement('div');
+            p0Store.className = 'store player1';
+            p0Store.innerHTML = `
+                <div class="store-label">Player 1</div>
+                <div class="store-count">${state.stores[0]}</div>
+            `;
+            
+            storesCol.appendChild(p1Store);
+            storesCol.appendChild(p0Store);
+
+            const p0Side = document.createElement('div');
+            p0Side.className = 'side';
+            const p0Pits = document.createElement('div');
+            p0Pits.className = 'pits';
+            
+            for (let i = 1; i < 6; i++) {
+                const pit = createPit(i, 0, state);
+                p0Pits.appendChild(pit);
+            }
+            p0Side.appendChild(p0Pits);
+
+            const p0Label = document.createElement('div');
+            p0Label.className = 'player-label player1';
+            p0Label.textContent = 'Player 1';
+            p0Side.style.position = 'relative';
+            p0Side.appendChild(p0Label);
+
+            board.appendChild(p1Side);
+            board.appendChild(storesCol);
+            board.appendChild(p0Side);
+
+            updateStatus(state);
+        }
+
+        function createPit(index, player, state) {
+            const pit = document.createElement('div');
+            pit.className = 'pit';
+            pit.dataset.index = index;
+            
+            const isActive = state.turn === player && 
+                           state.pits[index] > 0 && 
+                           !state.winner;
+            
+            if (isActive) {
+                pit.classList.add('active');
+            } else if (state.turn !== player || state.winner) {
+                pit.classList.add('disabled');
+            }
+            
+            pit.appendChild(generateSeedVisuals(state.pits[index]));
+            pit.addEventListener('click', () => onPitClick(index));
+            
+            return pit;
+        }
+
+        function updateStatus(state) {
+            const status = document.getElementById('status');
+            
+            if (state.winner !== null) {
+                if (state.winner === -1) {
+                    status.innerHTML = `<div class="winner-text">🤝 It's a Tie! 🤝</div>`;
+                } else {
+                    const winnerName = state.mode === 'single' && state.winner === 1 ? 'AI' : `Player ${state.winner + 1}`;
+                    status.innerHTML = `<div class="winner-text">🎉 ${winnerName} Wins! 🎉</div>`;
+                }
+            } else {
+                const playerName = state.mode === 'single' && state.turn === 1 ? 'AI' : `Player ${state.turn + 1}`;
+                status.innerHTML = `Current Turn: <span class="player-indicator">${playerName}</span>`;
+            }
+        }
+
+        async function onPitClick(pitIndex) {
+            if (gameState.winner !== null) return;
+            if (!isPlayersPit(pitIndex, gameState.turn)) return;
+            if (gameState.pits[pitIndex] === 0) return;
+
+            const pitElement = document.querySelector(`[data-index="${pitIndex}"]`);
+            if (pitElement) {
+                pitElement.classList.add('animating');
+                setTimeout(() => pitElement.classList.remove('animating'), 500);
+            }
+
+            // Animate seed distribution with delays
+            const originalPits = [...gameState.pits];
+            const seeds = gameState.pits[pitIndex];
+            
+            setTimeout(() => {
+                sowAndCapture(gameState, pitIndex);
+                
+                // Animate pits that received seeds
+                gameState.pits.forEach((count, idx) => {
+                    if (count > originalPits[idx] && idx !== pitIndex) {
+                        const receivingPit = document.querySelector(`[data-index="${idx}"]`);
+                        if (receivingPit) {
+                            receivingPit.classList.add('receiving');
+                            setTimeout(() => receivingPit.classList.remove('receiving'), 400);
+                        }
+                    }
+                });
+                
+                renderBoard(gameState);
+
+                if (gameState.mode === 'single' && 
+                    gameState.turn === 1 && 
+                    !gameState.winner) {
+                    
+                    document.getElementById('status').innerHTML = 
+                        `<span class="thinking">🤔 AI is thinking...</span>`;
+                    
+                    setTimeout(() => {
+                        const aiPit = simpleAI(gameState);
+                        if (aiPit !== null) {
+                            const aiPitElement = document.querySelector(`[data-index="${aiPit}"]`);
+                            if (aiPitElement) {
+                                aiPitElement.classList.add('animating');
+                                setTimeout(() => aiPitElement.classList.remove('animating'), 500);
+                            }
+                            
+                            setTimeout(() => {
+                                sowAndCapture(gameState, aiPit);
+                                renderBoard(gameState);
+                            }, 300);
+                        }
+                    }, 800);
+                }
+            }, 200);
+        }
+
+        function newGame() {
+            const mode = document.getElementById('mode-select').value;
+            gameState = newBoard();
+            gameState.mode = mode;
+            renderBoard(gameState);
+        }
+
+        function init() {
+            document.getElementById('new-btn').addEventListener('click', newGame);
+            document.getElementById('mode-select').addEventListener('change', newGame);
+            renderBoard(gameState);
+        }
+
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
