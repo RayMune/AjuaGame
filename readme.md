@@ -106,27 +106,43 @@ a reclamation of Africa’s intellectual dignity in the AI era.
 ---
 
 ## 🏛️ Technical Architecture  
+🏛️
 
-CULTURAL LAYER (Traditional Knowledge)
-↓
-DIGITAL PRESERVATION LAYER (Our Platform)
-↓
-┌─────────────────┐ ┌──────────────────┐ ┌─────────────────┐
-│ Cultural │◄──►│ AI Cultural │ │ Blockchain │
-│ Rule Engine │ │ Interpreter │ │ Memory Bank │
-│ - Elder-verified│ │ - Strategy Logic │ │ - Immutable │
-│ rules │ │ - Multilingual │ │ game records │
-└─────────────────┘ └──────────────────┘ └─────────────────┘
-│ │ │
-└───────────────────────┼───────────────────────┘
-│
-┌─────────────────┐
-│ Global Access │
-│ Web & Mobile │
-└─────────────────┘
+CULTURAL LAYER:
+  description: Traditional Knowledge
+  flow: ↓
 
-yaml
-Copy code
+DIGITAL PRESERVATION LAYER:
+  description: Our Platform
+  flow: ↓
+  components:
+    - Cultural Interpreter:
+        features:
+          - Elder-verified rules
+          - Multilingual
+    - AI Cultural Memory Bank:
+        features:
+          - Strategy Logic
+          - Dynamic Learning
+    - Blockchain:
+        features:
+          - Immutable game records
+          - Transparent scoring
+    - Rule Engine:
+        features:
+          - Applies verified cultural rules
+          - Enables adaptive gameplay
+
+INTERACTIONS:
+  - Cultural Interpreter ↔ AI Cultural Memory Bank
+  - AI Cultural Memory Bank ↔ Blockchain
+  - Rule Engine ↔ Cultural Interpreter
+
+ACCESS LAYER:
+  - Global Access:
+      platform: Web & Mobile
+      purpose: Bring indigenous cultural logic to everyone
+
 
 ---
 
