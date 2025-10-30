@@ -21,7 +21,7 @@
   <div style="border: 1px solid #ccc; border-radius: 10px; padding: 1rem; width: 300px; box-shadow: 2px 2px 10px rgba(0,0,0,0.1);">
     <h3>🎥 Watch Demo</h3>
     <p>See Ajua in action with real-time Hedera blockchain interactions.</p>
-    <a href="https://www.youtube.com/watch?v=YOUR_VIDEO_LINK" target="_blank" style="color: #007BFF; font-weight: bold;">▶️ Watch on YouTube</a>
+    <a href="https://www.youtube.com/watch?v=YOUR_VIDEO_LINK" target="_blank" style="color: #007BFF; font-weight: bold;">▶️ Watch on YouTube </a>
   </div>
 </div>
 
@@ -30,7 +30,7 @@
 ## 🌍 The Cultural Crisis: Vanishing Games in a Digital World  
 
 As the digital revolution sweeps the globe, a quiet crisis brews in Africa.  
-Our ancestral strategy games—**Ajua**, **Bao**, **Omweso**, and **Mweso**—are fading from memory.  
+Our ancestral strategy games like **Ajua**, **Bao**, **Omweso**, and **Mweso**—are fading from memory.  
 
 While games like **Chess**, **Go**, and **Mahjong** thrive through digital preservation, African strategy games remain largely **undocumented**, **unstudied**, and **unplayed**.
 
