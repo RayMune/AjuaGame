@@ -73,6 +73,40 @@ a reclamation of Africa’s intellectual dignity in the AI era.
 
 ---
 
+
+## 🪙 Hedera Integration Summary (Detailed)
+1. Hedera Consensus Service (HCS) - Immutable Game Record Logging 
+
+Why:
+We use the Hedera Consensus Service (HCS) to immutably record every game result as a JSON payload on-chain. Each match outcome — including player IDs, move history, and winner details — is published as a message to a dedicated HCS topic.
+This guarantees a verifiable, tamper-proof game history, ensuring fairness, transparency, and trust among players in competitive or reward-based environments.
+
+Transaction Types:
+
+TopicCreateTransaction — to initialize a unique topic for game sessions.
+
+TopicMessageSubmitTransaction — to append a JSON-encoded game result to the topic after each round.
+
+Economic Justification:
+Each message submission costs approximately $0.0001 USD, enabling thousands of game records to be stored securely and affordably.
+This cost stability, combined with Hedera’s asynchronous Byzantine Fault Tolerance (aBFT), ensures provable fairness and auditability at near-zero operational overhead — ideal for gaming ecosystems targeting wide adoption in emerging markets.
+
+
+2. Hedera Cryptocurrency Service — Automated Testnet Rewards
+
+Why:
+The Hedera Cryptocurrency Service enables instant payout of Testnet HBAR rewards to winners at the end of each match. By automating these transfers, Ajua ensures a seamless player experience — rewards are distributed in seconds without manual intervention or third-party custodians.
+
+Transaction Types:
+
+CryptoTransferTransaction — to send HBAR from the game operator account to the winning player’s Hedera account.
+
+Economic Justification:
+Each HBAR transfer costs roughly $0.0001 USD, allowing Ajua to reward hundreds of players daily at negligible expense.
+The predictable, low-fee model guarantees sustainability even as user activity scales, and Hedera’s sub-5-second finality ensures near-instant gratification — a critical factor for player retention in real-time games.
+
+---
+
 ## ✨ Revolutionary Features  
 
 ### 🎮 Authentic Core Gameplay  
