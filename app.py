@@ -248,7 +248,7 @@ def chat():
         # Add AI response to history
         chat_history.append({"role": "assistant", "content": [{"text": ai_message}]})
         
-        # Keep only last 10 messages to avoid token limits
+        # Keep only last 10 only messages to avoid token limits
         if len(chat_history) > 10:
             chat_history = chat_history[-10:]
         
