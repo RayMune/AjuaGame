@@ -24,6 +24,12 @@
     <p>See Ajua in action with real-time Hedera blockchain interactions.</p>
     <a href="https://www.youtube.com/watch?v=YOUR_VIDEO_LINK" target="_blank" style="color: #007BFF; font-weight: bold;">▶️ Watch on YouTube </a>
   </div>
+
+  <div style="border: 1px solid #ccc; border-radius: 10px; padding: 1rem; width: 300px; box-shadow: 2px 2px 10px rgba(0,0,0,0.1);">
+    <h3>🎓 Developer Certificate</h3>
+    <p>View my Hedera Hashgraph Developer Course Certificate.</p>
+    <a href="546ae8ca-d9d2-42c0-b40d-ae2aed7610c6 (1).pdf" target="_blank" style="color: #007BFF; font-weight: bold;">📜 View Certificate</a>
+  </div>
 </div>
 
 ---
