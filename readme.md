@@ -107,42 +107,36 @@ a reclamation of Africa’s intellectual dignity in the AI era.
 ---
 
 ## 🏛️ Technical Architecture  
-🏛️
 
-CULTURAL LAYER:
-  description: Traditional Knowledge
-  flow: ↓
+```mermaid
+graph TD
+    A[🧠 CULTURAL LAYER<br/>Traditional Knowledge] --> B[💻 DIGITAL PRESERVATION LAYER]
+    
+    B --> C[🗣️ Cultural Interpreter<br/>Elder-verified rules<br/>Multilingual]
+    B --> D[🤖 AI Cultural Memory Bank<br/>Strategy Logic<br/>Dynamic Learning]
+    B --> E[⛓️ Blockchain<br/>Immutable game records<br/>Transparent scoring]
+    B --> F[⚙️ Rule Engine<br/>Verified cultural rules<br/>Adaptive gameplay]
+    
+    C <--> D
+    D <--> E
+    F <--> C
+    
+    B --> G[🌐 ACCESS LAYER<br/>Web & Mobile<br/>Global Access]
+```
 
-DIGITAL PRESERVATION LAYER:
-  description: Our Platform
-  flow: ↓
-  components:
-    - Cultural Interpreter:
-        features:
-          - Elder-verified rules
-          - Multilingual
-    - AI Cultural Memory Bank:
-        features:
-          - Strategy Logic
-          - Dynamic Learning
-    - Blockchain:
-        features:
-          - Immutable game records
-          - Transparent scoring
-    - Rule Engine:
-        features:
-          - Applies verified cultural rules
-          - Enables adaptive gameplay
+**Architecture Overview:**
 
-INTERACTIONS:
-  - Cultural Interpreter ↔ AI Cultural Memory Bank
-  - AI Cultural Memory Bank ↔ Blockchain
-  - Rule Engine ↔ Cultural Interpreter
+📍 **CULTURAL LAYER**  
+Traditional knowledge base — the foundation of authentic gameplay
 
-ACCESS LAYER:
-  - Global Access:
-      platform: Web & Mobile
-      purpose: Bring indigenous cultural logic to everyone
+📍 **DIGITAL PRESERVATION LAYER** (Our Platform)  
+- 🗣️ **Cultural Interpreter**: Elder-verified rules, multilingual support
+- 🤖 **AI Cultural Memory Bank**: Strategy logic, dynamic learning
+- ⛓️ **Blockchain**: Immutable game records, transparent scoring  
+- ⚙️ **Rule Engine**: Applies verified cultural rules, enables adaptive gameplay
+
+📍 **ACCESS LAYER**  
+Web & Mobile platforms bringing indigenous cultural logic to everyone worldwide
 
 
 ---
