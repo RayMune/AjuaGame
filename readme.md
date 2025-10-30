@@ -15,7 +15,7 @@
   <div style="border: 1px solid #ccc; border-radius: 10px; padding: 1rem; width: 300px; box-shadow: 2px 2px 10px rgba(0,0,0,0.1);">
     <h3>📊 View Pitch Deck</h3>
     <p>Explore the Ajua concept, architecture, and business model.</p>
-    <a href="Ajua_ On-Chain African Strategy Revival.pptx" download style="color: #007BFF; font-weight: bold;">⬇️ View & Download Pitch Deck</a>
+    <a href="https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fraw.githubusercontent.com%2FRayMune%2FAjuaGame%2Frefs%2Fheads%2Fmain%2FAjua_%2520On-Chain%2520African%2520Strategy%2520Revival.pptx&wdOrigin=BROWSELINK" target="_blank" style="color: #007BFF; font-weight: bold;">⬇️ View & Download Pitch Deck</a>
     
   </div>
 
