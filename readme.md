@@ -221,7 +221,7 @@ We invite:
 Ajua is our pledge to ensure that Africa’s strategic brilliance  
 is preserved, played, and celebrated — not forgotten.  
 
-We are not merely coding a game.  
+We are not merely coding a game. This is not just the best project in the hedera hackathon but a pillar of Africa's future
 We are building a **digital ark** for African strategic wisdom —  
 anchored in blockchain, guided by AI, and played by the next generation.  
 
